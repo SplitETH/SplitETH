@@ -48,7 +48,7 @@ class NavBar extends Component {
       return (
         <div>
         <Navbar color="light" light expand="md">
-          <NavbarBrand href="/">Pablo's React Web3 Boilerplate</NavbarBrand>
+          <NavbarBrand href="/">SplitETH</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>

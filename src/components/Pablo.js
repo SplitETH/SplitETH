@@ -1,67 +1,20 @@
 import React, { Component } from 'react';
 import {BigNumber} from 'bignumber.js';
+import PabloJSON from '../build/contracts/Pablo.json'
 
 class Pablo extends Component {
 
   constructor(props) {
     super(props);
 
-    console.log(props);
-
     this.handleClick = this.handleClick.bind(this);
     this.handleChange = this.handleChange.bind(this);
 
-    //const pabloAddress = JSON.parse(require('fs').readFileSync('./build/contracts/Pablo.json').toString()).networks[15].address;
-    const PabloABI = [
-      {
-        "constant": true,
-        "inputs": [],
-        "name": "myData",
-        "outputs": [
-          {
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": false,
-            "name": "_message",
-            "type": "string"
-          }
-        ],
-        "name": "PabloEvent",
-        "type": "event"
-      },
-      {
-        "constant": false,
-        "inputs": [
-          {
-            "name": "x",
-            "type": "uint256"
-          }
-        ],
-        "name": "setData",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }
-    ];
-    const pabloC = new props.web3.eth.Contract(PabloABI,"0x72d50ed0a88eea0f414166c466bd049781c17773");
-    const pabloC_event = new props.web3WH.eth.Contract(PabloABI,"0x72d50ed0a88eea0f414166c466bd049781c17773");
+    const pabloAddress = PabloJSON.networks[15].address;
+    const PabloABI = PabloJSON.abi;
+
+    const pabloC = new props.web3.eth.Contract(PabloABI,pabloAddress);
+    const pabloC_event = new props.web3WH.eth.Contract(PabloABI,pabloAddress);
     pabloC_event.setProvider(props.web3WH.currentProvider);
 
 
