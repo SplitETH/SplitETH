@@ -30,7 +30,7 @@ contract SplitETH {
 
     function createGroup(bytes32 _name, address[] _users, address _token, uint256 _timeout) external {
         require(_users.length > 0, "Empty group");
-        require(_users.length <= 10, "Group too large");
+        require(_users.length <= 4, "Group too large");
         require(groupUsers[_name].length == 0, "Name in use");
         require(_token != address(0), "Invalid token");
         groupUsers[_name] = _users;
@@ -66,7 +66,7 @@ contract SplitETH {
         require(_amounts.length == _isCredits.length, "Invalid state lengths");
         require(_amounts.length == groupUsers[_name].length, "Invalid user lengths");
         require(now <= groupCloseTime[_name], "Challenge period not active");
-        //require(checkSigs(_name, _amounts, _isCredits, _timestamp, _vs, _rs, _ss), "Invalid sigs");
+        require(checkSigs(_name, _amounts, _isCredits, _timestamp, _vs, _rs, _ss), "Invalid sigs");
         require(_updateState(_name, _amounts, _isCredits, _timestamp), "Invalid state");
         emit GroupUpdated(_name, now);
     }
@@ -104,7 +104,6 @@ contract SplitETH {
     }
 
     function checkSigs(bytes32 _name, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp, uint8[] _vs, bytes32[] _rs, bytes32[] _ss) public view returns(bool) {
-        //TODO: check sigs match state
         require(_vs.length == _rs.length, "Bad signatures");
         require(_vs.length == _ss.length, "Bad signatures");
         require(_vs.length == groupUsers[_name].length, "Incorrect sigs length");
@@ -115,10 +114,19 @@ contract SplitETH {
         return true;
     }
 
-    function checkSig(bytes32 _name, address _user, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp, uint8 _v, bytes32 _r, bytes32 _s) public pure returns(bool) {
+    function checkSig(bytes32 _name, address _user, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp, uint8 _v, bytes32 _r, bytes32 _s) public view returns(bool) {
         require(_amounts.length == _isCredits.length, "Incorrect isCredits length");
-        bytes32 dataToBeSigned = keccak256(abi.encodePacked(_name, _amounts, _isCredits, _timestamp));
-        require(_user == ecrecover(dataToBeSigned, _v, _r, _s), "Signature mismatch");
+        bytes32 typedData;
+        if (_amounts.length == 2) {
+            typedData = _getHash2(_name, _amounts, _isCredits, _timestamp);
+        }
+        if (_amounts.length == 3) {
+            typedData = _getHash3(_name, _amounts, _isCredits, _timestamp);
+        }
+        if (_amounts.length == 4) {
+            typedData = _getHash4(_name, _amounts, _isCredits, _timestamp);
+        }
+        require(_user == ecrecover(typedData, _v, _r, _s), "Signature mismatch");
         return true;
     }
 
