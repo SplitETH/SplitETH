@@ -55,7 +55,7 @@ contract SplitETH {
     function closeGroup(bytes32 _name, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp, uint8[] _vs, bytes32[] _rs, bytes32[] _ss) external {
         require(groupCloseTime[_name] == 0, "Group already closed");
         groupCloseTime[_name] = now.add(groupTimeout[_name]);
-        updateGroup(_name, _amounts, _isCredits, _timestamp, _vs, _rs, _ss);
+        //updateGroup(_name, _amounts, _isCredits, _timestamp, _vs, _rs, _ss);
         emit GroupClosed(_name, groupCloseTime[_name]);
     }
 
@@ -83,7 +83,7 @@ contract SplitETH {
         } else {
             withdrawn = groupBalances[_name][msg.sender].sub(userState.amount);
         }
-        require(ERC20(groupToken[_name]).transfer(msg.sender, groupBalances[_name][msg.sender].add(userState.amount)), "Transfer Failed");
+        //require(ERC20(groupToken[_name]).transfer(msg.sender, groupBalances[_name][msg.sender].add(userState.amount)), "Transfer Failed");
         emit UserBalanceWithdrawn(_name, msg.sender, groupToken[_name], withdrawn);
         inGroup[_name][msg.sender] = false;
     }

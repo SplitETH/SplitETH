@@ -23,8 +23,10 @@ class Channel extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleNewChannel = this.handleNewChannel.bind(this);
     this.handleJoinChannel = this.handleJoinChannel.bind(this);
+    this.handleCloseChannel = this.handleCloseChannel.bind(this);
     this.handleSubmitNewChannel = this.handleSubmitNewChannel.bind(this);
     this.handleSubmitJoinChannel = this.handleSubmitJoinChannel.bind(this);
+    this.handlePullFundsFromChannel = this.handlePullFundsFromChannel.bind(this);
 
     const pabloAddress = PabloJSON.networks[15].address;
     const PabloABI = PabloJSON.abi;
@@ -198,6 +200,34 @@ class Channel extends Component {
       });
     }
 
+    async handleCloseChannel(group) {
+      console.log(group);
+      await this.state.splitETH.methods.closeGroup(
+        this.state.web3.utils.fromAscii(group),
+        [],
+        [],
+        1212121,
+        [],
+        [],
+        []
+      ).send({from:this.state.accounts[0]})
+      .then(function(receipt){
+        console.log(receipt);
+      });
+
+    }
+
+    async handlePullFundsFromChannel(group) {
+      console.log(group);
+      await this.state.splitETH.methods.pullFunds(
+        this.state.web3.utils.fromAscii(group)
+      ).send({from:this.state.accounts[0]})
+      .then(function(receipt){
+        console.log(receipt);
+      });
+
+    }
+
     handleChange(event) {
       //this.setState({myValue: event.target.value});
     }
@@ -360,6 +390,11 @@ class Channel extends Component {
         <td>{group.timeout}</td>
         <td> <Button color="primary" size="sm" onClick={() => this.handleJoinChannel(group.name)}>Add Balance</Button></td>
         <td><Link href="" to={"/expenses/"+group.name}>Manage Expenses</Link></td>
+        <td>
+          <Button color="danger" size="sm" onClick={() => this.handleCloseChannel(group.name)}>CLOSE</Button>
+          <Button color="info" size="sm" onClick={() => this.handlePullFundsFromChannel(group.name)}>Pull Funds</Button>
+        </td>
+
       </tr>);
     });
 
@@ -370,7 +405,9 @@ class Channel extends Component {
             <th>Group Name</th>
             <th>Participants</th>
             <th>Timeout</th>
-            <th>Actions</th>
+            <th>Balance</th>
+            <th>Expenses</th>
+            <th>Close Group</th>
           </tr>
         </thead>
         <tbody>
