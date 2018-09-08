@@ -15,7 +15,7 @@ import {
 } from 'react-router-dom'
 import SETokenJSON from '../build/contracts/SEToken.json'
 
-export const NETWORK_ID = 18;
+export const NETWORK_ID = 15;
 
 class Channel extends Component {
 
