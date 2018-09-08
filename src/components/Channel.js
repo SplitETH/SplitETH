@@ -24,6 +24,7 @@ class Channel extends Component {
     this.handleNewChannel = this.handleNewChannel.bind(this);
     this.handleJoinChannel = this.handleJoinChannel.bind(this);
     this.handleSubmitNewChannel = this.handleSubmitNewChannel.bind(this);
+    this.handleSubmitJoinChannel = this.handleSubmitJoinChannel.bind(this);
 
     const pabloAddress = PabloJSON.networks[15].address;
     const PabloABI = PabloJSON.abi;
@@ -85,19 +86,37 @@ class Channel extends Component {
           fromBlock: 0,
           toBlock: 'latest'
       }, function(error, events){})
-      .then(function(events){
+      .then(async function(events){
         _this.setState({
           groups: []
         });
-        events.forEach(function(element) {
+
+        for (let element of events) {
+          var friends = [];
+          for (let usr of element.returnValues._users) {
+            const result = await _this.state.splitETH.methods.groupBalances(element.returnValues._name,usr).call();
+
+            friends.push({
+              address:usr,
+              balance:result
+            })
+          }
           _this.setState({
             groups: [..._this.state.groups, {
-              name: _this.state.web3.utils.toAscii(element.returnValues._name),
-              friends: element.returnValues._users,
-              timeout: element.returnValues._timeout
-            }]
-          });
-        });
+                name: _this.state.web3.utils.toAscii(element.returnValues._name),
+                friends: friends,
+                timeout: element.returnValues._timeout
+              }]
+            });
+        }
+
+        // events.forEach(function(element) {
+        //
+        //
+        //   element.returnValues._users.forEach(function(usr) {
+        //
+        //   })
+        // });
       });
     }
 
@@ -124,6 +143,30 @@ class Channel extends Component {
       .then(function(receipt){
         //console.log(web3.utils.toAscii(receipt.events.GroupCreated.returnValues._name));
         alert(_this.state.web3.utils.toAscii(receipt.events.GroupCreated.returnValues._name) + " Successfully created!");
+        _this.setState({selectedOption:0});
+        _this.getGroups();
+      // receipt can also be a new contract instance, when coming from a "contract.deploy({...}).send()"
+      });
+    }
+
+    async handleSubmitJoinChannel(event) {
+      //console.log(event.target.GroupName.value);
+      event.preventDefault();
+
+      var _this = this;
+
+      var groupName = this.state.web3.utils.fromAscii(event.target.GroupName.value);
+      var user = event.target.User.value;
+      var amount = event.target.Amount.value;
+
+      await this.state.splitETH.methods.fundUser(
+        groupName,
+        user,
+        amount
+      ).send({from:this.state.accounts[0]})
+      .then(function(receipt){
+        //console.log(web3.utils.toAscii(receipt.events.GroupCreated.returnValues._name));
+      //  alert(_this.state.web3.utils.toAscii(receipt.events.GroupCreated.returnValues._name) + " Successfully created!");
         _this.setState({selectedOption:0});
         _this.getGroups();
       // receipt can also be a new contract instance, when coming from a "contract.deploy({...}).send()"
@@ -228,21 +271,22 @@ class Channel extends Component {
           <Container className="Wallet">
             <Row>
               <Col sm="12" md={{ size: 8, offset: 2 }}>
-                {/* {this.state.accounts[0]} (<EthBalanceDisplay web3={this.state.web3} web3WH={this.state.web3WH} />) */}
-              </Col>
-            </Row>
-            <Row>
-              <Col sm="12" md={{ size: 8, offset: 2 }}>
-                aaaaaaa funds
+                Fund Group
               </Col>
             </Row>
             <Row>
               <Col sm="12">
-                <Form onSubmit={this.handleSubmit}>
+                <Form onSubmit={this.handleSubmitJoinChannel}>
                   <FormGroup row>
-                    <Label for="To" sm={2}>To: </Label>
+                    <Label for="GroupName" sm={2}>Group: </Label>
                     <Col sm={10}>
-                      <Input type="text" name="To" placeholder="0x0123..." />
+                      <Input type="text" name="GroupName" placeholder="Berlin" />
+                    </Col>
+                  </FormGroup>
+                  <FormGroup row>
+                    <Label for="User" sm={2}>User: </Label>
+                    <Col sm={10}>
+                      <Input type="text" name="User" placeholder="0x123" />
                     </Col>
                   </FormGroup>
                   <FormGroup row>
@@ -253,7 +297,7 @@ class Channel extends Component {
                   </FormGroup>
                   <FormGroup check row>
                     <Col sm={{ size: 12, offset: 0 }}>
-                      <Button>Transfer</Button>
+                      <Button>Fund</Button>
                     </Col>
                   </FormGroup>
                 </Form>
@@ -296,8 +340,13 @@ class Channel extends Component {
 
       const participantsItems = group.friends.map((participant,i) => {
 
+        var participantItem = {
+          address: participant.address,
+          balance: participant.balance
+        }
+
         return(
-          <li key={i}>{participant}</li>
+          <li key={i}>{participantItem.address} - Balance: {participant.balance}</li>
         )
       })
 
