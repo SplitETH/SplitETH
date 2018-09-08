@@ -122,8 +122,6 @@ contract SplitETH {
         return true;
     }
 
-<<<<<<< Updated upstream
-=======
     function _getHash2(bytes32 _name, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp) internal view returns(bytes32) {
         bytes32 stateData = keccak256(abi.encodePacked(address(this), _name, _timestamp, _amounts[0], _isCredits[0], _amounts[1], _isCredits[1]));
         bytes32 abiHash = keccak256(abi.encodePacked("address splitETH", "bytes32 name", "uint256 timestamp", "uint256 amount_0", "bool isCredit_0", "uint256 amount_1", "bool isCredit_1"));
@@ -144,6 +142,5 @@ contract SplitETH {
         bytes32 typedData = keccak256(abi.encodePacked(abiHash, stateData));
         return typedData;
     }
->>>>>>> Stashed changes
 
 }
