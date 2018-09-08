@@ -30,7 +30,8 @@ contract SplitETH {
 
     function createGroup(bytes32 _name, address[] _users, address _token, uint256 _timeout) external {
         require(_users.length > 0, "Empty group");
-        require(_users.length <= 10, "Group too large");
+        require(_users.length <= 4, "Group too large");
+        require(_users.length > 1, "Group too small");
         require(groupUsers[_name].length == 0, "Name in use");
         require(_token != address(0), "Invalid token");
         groupUsers[_name] = _users;
@@ -55,7 +56,7 @@ contract SplitETH {
     function closeGroup(bytes32 _name, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp, uint8[] _vs, bytes32[] _rs, bytes32[] _ss) external {
         require(groupCloseTime[_name] == 0, "Group already closed");
         groupCloseTime[_name] = now.add(groupTimeout[_name]);
-        //updateGroup(_name, _amounts, _isCredits, _timestamp, _vs, _rs, _ss);
+        updateGroup(_name, _amounts, _isCredits, _timestamp, _vs, _rs, _ss);
         emit GroupClosed(_name, groupCloseTime[_name]);
     }
 
@@ -82,7 +83,7 @@ contract SplitETH {
         } else {
             withdrawn = groupBalances[_name][msg.sender].sub(userState.amount);
         }
-        //require(ERC20(groupToken[_name]).transfer(msg.sender, groupBalances[_name][msg.sender].add(userState.amount)), "Transfer Failed");
+        require(ERC20(groupToken[_name]).transfer(msg.sender, groupBalances[_name][msg.sender].add(userState.amount)), "Transfer Failed");
         emit UserBalanceWithdrawn(_name, msg.sender, groupToken[_name], withdrawn);
         inGroup[_name][msg.sender] = false;
     }
@@ -104,7 +105,6 @@ contract SplitETH {
     }
 
     function checkSigs(bytes32 _name, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp, uint8[] _vs, bytes32[] _rs, bytes32[] _ss) public view returns(bool) {
-        //TODO: check sigs match state
         require(_vs.length == _rs.length, "Bad signatures");
         require(_vs.length == _ss.length, "Bad signatures");
         require(_vs.length == groupUsers[_name].length, "Incorrect sigs length");
@@ -115,12 +115,42 @@ contract SplitETH {
         return true;
     }
 
-    function checkSig(bytes32 _name, address _user, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp, uint8 _v, bytes32 _r, bytes32 _s) public pure returns(bool) {
+    // These functions should be replaced when MetaMask supports the new EIP712 standard
+    function checkSig(bytes32 _name, address _user, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp, uint8 _v, bytes32 _r, bytes32 _s) public view returns(bool) {
         require(_amounts.length == _isCredits.length, "Incorrect isCredits length");
-        bytes32 dataToBeSigned = keccak256(abi.encodePacked(_name, _amounts, _isCredits, _timestamp));
-        require(_user == ecrecover(dataToBeSigned, _v, _r, _s), "Signature mismatch");
+        bytes32 typedData;
+        if (_amounts.length == 2) {
+            typedData = _getHash2(_name, _amounts, _isCredits, _timestamp);
+        }
+        if (_amounts.length == 3) {
+            typedData = _getHash3(_name, _amounts, _isCredits, _timestamp);
+        }
+        if (_amounts.length == 4) {
+            typedData = _getHash4(_name, _amounts, _isCredits, _timestamp);
+        }
+        require(_user == ecrecover(typedData, _v, _r, _s), "Signature mismatch");
         return true;
     }
 
+    function _getHash2(bytes32 _name, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp) internal returns(bytes32) {
+        bytes32 stateData = keccak256(abi.encodePacked(address(this), _name, _timestamp, _amounts[0], _isCredits[0], _amounts[1], _isCredits[1]));
+        bytes32 abiHash = keccak256(abi.encodePacked("address splitETH", "bytes32 name", "uint256 timestamp", "uint256 amount_0", "bool isCredit_0", "uint256 amount_1", "bool isCredit_1"));
+        bytes32 typedData = keccak256(abi.encodePacked(abiHash, stateData));
+        return typedData;
+    }
+
+    function _getHash3(bytes32 _name, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp) internal returns(bytes32) {
+        bytes32 stateData = keccak256(abi.encodePacked(address(this), _name, _timestamp, _amounts[0], _isCredits[0], _amounts[1], _isCredits[1], _amounts[2], _isCredits[2]));
+        bytes32 abiHash = keccak256(abi.encodePacked("address splitETH", "bytes32 name", "uint256 timestamp", "uint256 amount_0", "bool isCredit_0", "uint256 amount_1", "bool isCredit_1", "uint256 amount_2", "bool isCredit_2"));
+        bytes32 typedData = keccak256(abi.encodePacked(abiHash, stateData));
+        return typedData;
+    }
+
+    function _getHash4(bytes32 _name, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp) internal returns(bytes32) {
+        bytes32 stateData = keccak256(abi.encodePacked(address(this), _name, _timestamp, _amounts[0], _isCredits[0], _amounts[1], _isCredits[1], _amounts[2], _isCredits[2], _amounts[3], _isCredits[3]));
+        bytes32 abiHash = keccak256(abi.encodePacked("address splitETH", "bytes32 name", "uint256 timestamp", "uint256 amount_0", "bool isCredit_0", "uint256 amount_1", "bool isCredit_1", "uint256 amount_2", "bool isCredit_2", "uint256 amount_3", "bool isCredit_3"));
+        bytes32 typedData = keccak256(abi.encodePacked(abiHash, stateData));
+        return typedData;
+    }
 
 }
