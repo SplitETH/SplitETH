@@ -219,8 +219,8 @@ class Channel extends Component {
       console.log(group);
       await this.state.splitETH.methods.closeGroup(
         this.state.web3.utils.fromAscii(group),
-        [],
-        [],
+        [50,50],
+        [true,false],
         1212121,
         [],
         [],
