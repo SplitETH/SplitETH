@@ -19,6 +19,8 @@ contract SplitETH {
     event UserBalanceRefunded(bytes32 indexed _name, address indexed _user, address indexed _token, uint256 _refund);
     event GroupClosed(bytes32 indexed _name, uint256 _time);
 
+    event GroupCreated(bytes32 indexed _name,  address[] _users, address _token, uint256 _timeout);
+
     function createGroup(bytes32 _name, address[] _users, address _token, uint256 _timeout) external {
         //TODO: Check _users are unique
         require(_users.length > 0, "Empty group");
@@ -27,6 +29,9 @@ contract SplitETH {
         groupUsers[_name] = _users;
         groupToken[_name] = _token;
         groupTimeout[_name] = _timeout;
+
+        emit GroupCreated(_name, _users, _token, _timeout);
+
     }
 
     function fundUser(bytes32 _name, address _user, uint256 _amount) external {

@@ -45,3 +45,8 @@ body{
 .Wallet-body {
   background-color: #fafafa;
 }
+
+.NewChannel-Container {
+  padding-left:3em;
+  padding-right:3em;
+}
