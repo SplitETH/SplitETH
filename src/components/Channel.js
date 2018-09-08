@@ -200,7 +200,7 @@ class Channel extends Component {
       var _this = this;
       await this.state.splitETH.methods.closeGroup(
         this.state.web3.utils.fromAscii(group),
-        [100,100],
+        [_this.state.web3.utils.toWei("100"),_this.state.web3.utils.toWei("100")],
         [false,true],
         1212121,
         [],
