@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom'
 import SETokenJSON from '../build/contracts/SEToken.json'
 
-export const NETWORK_ID = 19;
+export const NETWORK_ID = 15;
 
 class Channel extends Component {
 
@@ -99,11 +99,17 @@ class Channel extends Component {
               balance:result
             })
           }
+          const myBal = await _this.state.splitETH.methods.groupBalances(element.returnValues._name,_this.state.accounts[0]).call();
+
+          const result2 = await _this.state.splitETH.methods.groupCloseTime(element.returnValues._name).call();
+          console.log("que",result2);
           _this.setState({
             groups: [..._this.state.groups, {
                 name: _this.state.web3.utils.toAscii(element.returnValues._name),
                 friends: friends,
-                timeout: element.returnValues._timeout
+                timeout: element.returnValues._timeout,
+                closed: result2 > 0 ? true : false,
+                myBal:myBal
               }]
             });
         }
@@ -191,7 +197,7 @@ class Channel extends Component {
 
     async handleCloseChannel(group) {
       console.log(group);
-
+      var _this = this;
       await this.state.splitETH.methods.closeGroup(
         this.state.web3.utils.fromAscii(group),
         [100,100],
@@ -203,17 +209,20 @@ class Channel extends Component {
       ).send({from:this.state.accounts[0]})
       .then(function(receipt){
         console.log(receipt);
+        _this.getGroups();
       });
 
     }
 
     async handlePullFundsFromChannel(group) {
       console.log(group);
+      var _this = this;
       await this.state.splitETH.methods.pullFunds(
         this.state.web3.utils.fromAscii(group)
       ).send({from:this.state.accounts[0]})
       .then(function(receipt){
         console.log(receipt);
+        _this.getGroups();
       });
 
     }
@@ -374,18 +383,40 @@ class Channel extends Component {
         )
       })
 
-      return (<tr>
-        <th scope="row">{group.name}</th>
-        <td>{participantsItems}</td>
-        <td>{group.timeout}</td>
-        <td> <Button color="primary" size="sm" onClick={() => this.handleJoinChannel(group.name)}>Add Balance</Button></td>
-        <td><Link href="" to={"/expenses/"+group.name}>Manage Expenses</Link></td>
-        <td>
-          <div><Button color="danger" size="sm" onClick={() => this.handleCloseChannel(group.name)}>CLOSE</Button></div>
-          <Button color="info" size="sm" onClick={() => this.handlePullFundsFromChannel(group.name)}>Pull Funds</Button>
-        </td>
+      if(group.closed && group.myBal != 0){
+        return (<tr>
+          <th scope="row">{group.name}</th>
+          <td>{participantsItems}</td>
+          <td>{group.timeout}</td>
+          <td>Group is closed</td>
+          <td><Link href="" to={"/expenses/"+group.name}>View Expenses</Link></td>
+          <td><Button color="info" size="sm" onClick={() => this.handlePullFundsFromChannel(group.name)}>Pull Funds</Button></td>
 
-      </tr>);
+        </tr>);
+      }else if(group.closed && group.myBal == 0){
+        return (<tr>
+          <th scope="row">{group.name}</th>
+          <td>{participantsItems}</td>
+          <td>{group.timeout}</td>
+          <td>Group is closed</td>
+          <td><Link href="" to={"/expenses/"+group.name}>View Expenses</Link></td>
+          <td>Balance pulled</td>
+
+        </tr>);
+      }else{
+        return (<tr>
+          <th scope="row">{group.name}</th>
+          <td>{participantsItems}</td>
+          <td>{group.timeout}</td>
+          <td> <Button color="primary" size="sm" onClick={() => this.handleJoinChannel(group.name)}>Add Balance</Button></td>
+          <td><Link href="" to={"/expenses/"+group.name}>Manage Expenses</Link></td>
+          <td>
+            <div><Button color="danger" size="sm" onClick={() => this.handleCloseChannel(group.name)}>CLOSE</Button></div>
+          </td>
+
+        </tr>);
+      }
+
     });
 
     return (
