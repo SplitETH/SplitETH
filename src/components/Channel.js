@@ -217,10 +217,11 @@ class Channel extends Component {
 
     async handleCloseChannel(group) {
       console.log(group);
+
       await this.state.splitETH.methods.closeGroup(
         this.state.web3.utils.fromAscii(group),
-        [50,50],
-        [true,false],
+        [100,150,250],
+        [false,false,true],
         1212121,
         [],
         [],
@@ -446,6 +447,51 @@ class Channel extends Component {
         </div>
       )
     }
+
+
+    ///
+    //Signing
+    ///
+
+    // TODO: @Daniel, move this to the expenses page.
+
+    // signMsg(group) {
+    //
+    //   let msgParams = [
+    //     {type: 'address', name: 'splitETH', value: this.state.splitETH._address},
+    //     {type: 'bytes32', name: 'name', value: group},
+    //     {type: 'uint256', name: 'timestamp', value: 1},
+    //     {type: 'uint256', name: 'amount_0', value: 100},
+    //     {type: 'bool', name: 'isCredit_0', value: false},
+    //     {type: 'uint256', name: 'amount_1', value: 150},
+    //     {type: 'bool', name: 'isCredit_1', value: false},
+    //     {type: 'uint256', name: 'amount_2', value: 250},
+    //     {type: 'bool', name: 'isCredit_2', value: true},
+    //   ];
+    //
+    //   let from = this.state.accounts[0];
+    //
+    //   this.state.web3.currentProvider.sendAsync({
+    //     method: 'eth_signTypedData',
+    //     params: [msgParams, from],
+    //     from: from,
+    //   }, function (err, result) {
+    //     if (err) return console.error(err)
+    //     if (result.error) {
+    //       return console.error(result.error.message)
+    //     }
+    //     let res = result.result.slice(2);
+    //     let r = '0x' + res.substr(0, 64),
+    //       s = '0x' + res.substr(64, 64),
+    //       v = parseInt(res.substr(128, 2), 16);
+    //     console.log(v, r, s);
+    //   });
+    //
+    // }
   }
+
+
+
+
 
   export default Channel;
