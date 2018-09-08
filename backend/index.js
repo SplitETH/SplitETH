@@ -49,7 +49,7 @@ const BillSchema = Schema({
 const GroupModel = mongoose.model('Group', Schema({
     _id: String,
     name: String,
-    address: String,
+    numParticipants: Number,
     bills: [BillSchema]
 }, { _id: false }));
 
@@ -61,7 +61,8 @@ const main = async () => {
 
         const group = new GroupModel({
             _id: req.body.address + (Math.random() * 100).toString(), // random for testing with the same id
-            name: req.body.name
+            name: req.body.name,
+            numParticipants: req.body.numParticipants
         });
 
         await group.save();
@@ -127,6 +128,10 @@ const main = async () => {
             }
 
             bill.signatures.push(req.body.signature);
+
+            if (bill.signatures.length == numParticipants) {
+                bill.fullySigned = true;
+            }
 
             await group.save();
 
