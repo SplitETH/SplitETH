@@ -47,7 +47,7 @@ contract SplitETH {
         require(_user != address(0), "Invalid user");
         require(inGroup[_name][_user], "User not in group");
         require(groupCloseTime[_name] == 0, "Group is closed");
-        require(ERC20(groupToken[_name]).transferFrom(msg.sender, address(this), _amount), "Transfer Failed");
+        //require(ERC20(groupToken[_name]).transferFrom(msg.sender, address(this), _amount), "Transfer Failed");
         groupBalances[_name][_user] = groupBalances[_name][_user].add(_amount);
         emit UserBalanceUpdated(_name, _user, groupToken[_name], _amount, groupBalances[_name][_user]);
     }
