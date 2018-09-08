@@ -83,16 +83,23 @@ contract SplitETH {
         } else {
             withdrawn = groupBalances[_name][msg.sender].sub(userState.amount);
         }
-        require(ERC20(groupToken[_name]).transferFrom(address(this), msg.sender, groupBalances[_name][msg.sender].add(userState.amount)), "Transfer Failed");
+        require(ERC20(groupToken[_name]).transfer(msg.sender, groupBalances[_name][msg.sender].add(userState.amount)), "Transfer Failed");
         emit UserBalanceWithdrawn(_name, msg.sender, groupToken[_name], withdrawn);
         inGroup[_name][msg.sender] = false;
     }
 
     function _updateState(bytes32 _name, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp) internal returns(bool) {
-        //TODO: check amounts sum to 0
+        uint256 credits;
+        uint256 debits;
         for (uint8 i = 0; i < _amounts.length; i++) {
+            if (_isCredits[i]) {
+                credits = credits.add(_amounts[i]);
+            } else {
+                debits = debits.add(_amounts[i]);
+            }
             groupState[_name][groupUsers[_name][i]] = State(_amounts[i], _isCredits[i]);
         }
+        require(credits == debits, "Non-zero state");
         groupNonce[_name] = _timestamp;
         return true;
     }
