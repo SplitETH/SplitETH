@@ -5,6 +5,7 @@ const SEToken = artifacts.require("./SEToken.sol");
 const utils = require('ethereumjs-util');
 const sigUtil = require('eth-sig-util');
 const assertFail = require("./helpers/assertFail");
+const increaseTime = require('./helpers/time');
 
 const Web3 = require('web3');
 const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545")) // Hardcoded development port
@@ -23,7 +24,7 @@ contract('SplitETH', function (accounts) {
     it("1. create ETHBerlin state channel with three participants", async () => {
         const splitETH = await SplitETH.deployed();
         const token = await SEToken.deployed();
-        await splitETH.createGroup("ETHBerlin", [ALICE, BOB, CHARLES], token.address, 7 * 24 * 60 * 60);
+        await splitETH.createGroup("ETHBerlin", [ALICE, BOB, CHARLES], token.address, 0);//7 * 24 * 60 * 60);
     });
 
     it("2. Alice funds the state channel with 1000 tokens", async () => {
@@ -57,7 +58,6 @@ contract('SplitETH', function (accounts) {
         let vs = [];
         let rs = [];
         let ss = [];
-
         let res1 = signState(state, pk1);
         vs.push(res1.v);
         rs.push(res1.r);
@@ -71,6 +71,15 @@ contract('SplitETH', function (accounts) {
         rs.push(res3.r);
         ss.push(res3.s);
         await splitETH.closeGroup("ETHBerlin", state.amounts, state.isCredits, state.timestamp, vs, rs, ss, {from: ALICE});
+    });
+
+    it("6. Pull funds", async () => {
+        const splitETH = await SplitETH.deployed();
+        const token = await SEToken.deployed();
+        await increaseTime(50);
+        await splitETH.pullFunds("ETHBerlin", {from: ALICE});
+        await splitETH.pullFunds("ETHBerlin", {from: BOB});
+        await splitETH.pullFunds("ETHBerlin", {from: CHARLES});
     });
 
 });
