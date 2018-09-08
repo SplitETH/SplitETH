@@ -9,7 +9,6 @@ import {
   Link
 } from 'react-router-dom'
 
-import Pablo from './components/Pablo'
 import Channel from './components/Channel'
 import NavBar from './components/NavBar'
 import Wallet from './components/Wallet'
