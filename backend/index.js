@@ -32,7 +32,7 @@ const BillSchema = Schema({
     name: String,
     state: String,
     fullySigned: Boolean,
-    totalAmount: Number,
+    totalAmount: String,
     totalBalanceChange: [BalanceEntrySchema],
     balanceChange: [BalanceEntrySchema],
     parts: [BalanceEntrySchema],
@@ -139,7 +139,7 @@ const main = async () => {
         });
     });
 
-    app.listen(3000, () => console.log('Example app listening on port 3000!'))
+    app.listen(3001, () => console.log('Example app listening on port 3001!'))
 };
 
 main();

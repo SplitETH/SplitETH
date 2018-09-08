@@ -25,6 +25,7 @@ import {
   } from 'react-router-dom'
 
 import SETokenJSON from '../build/contracts/SEToken.json'
+import { NETWORK_ID } from './Channel';
 
 
 class NavBar extends Component {
@@ -32,7 +33,7 @@ class NavBar extends Component {
   constructor(props) {
     super(props);
 
-      const SETAddress = SETokenJSON.networks[15].address;
+      const SETAddress = SETokenJSON.networks[NETWORK_ID].address;
       const SETABI = SETokenJSON.abi;
 
       const seToken = new props.web3.eth.Contract(SETABI,SETAddress);

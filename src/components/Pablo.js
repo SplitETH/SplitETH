@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {BigNumber} from 'bignumber.js';
 import PabloJSON from '../build/contracts/Pablo.json'
+import { NETWORK_ID } from './Channel';
 
 class Pablo extends Component {
 
@@ -10,7 +11,7 @@ class Pablo extends Component {
     this.handleClick = this.handleClick.bind(this);
     this.handleChange = this.handleChange.bind(this);
 
-    const pabloAddress = PabloJSON.networks[15].address;
+    const pabloAddress = PabloJSON.networks[NETWORK_ID].address;
     const PabloABI = PabloJSON.abi;
 
     const pabloC = new props.web3.eth.Contract(PabloABI,pabloAddress);

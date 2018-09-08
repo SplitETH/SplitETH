@@ -13,8 +13,9 @@ import {
   Route,
   Link
 } from 'react-router-dom'
-
 import SETokenJSON from '../build/contracts/SEToken.json'
+
+export const NETWORK_ID = 18;
 
 class Channel extends Component {
 
@@ -30,13 +31,13 @@ class Channel extends Component {
     this.handleSubmitJoinChannel = this.handleSubmitJoinChannel.bind(this);
     this.handlePullFundsFromChannel = this.handlePullFundsFromChannel.bind(this);
 
-    const pabloAddress = PabloJSON.networks[15].address;
+    const pabloAddress = PabloJSON.networks[NETWORK_ID].address;
     const PabloABI = PabloJSON.abi;
 
-    const splitETHAddress = SplitETHJSON.networks[15].address;
+    const splitETHAddress = SplitETHJSON.networks[NETWORK_ID].address;
     const splitETHABI = SplitETHJSON.abi;
 
-    const SETAddress = SETokenJSON.networks[15].address;
+    const SETAddress = SETokenJSON.networks[NETWORK_ID].address;
     const SETABI = SETokenJSON.abi;
 
     const pabloC = new props.web3.eth.Contract(PabloABI,pabloAddress);
@@ -443,7 +444,6 @@ class Channel extends Component {
           {this.renderSelectedOption()}
 
           {this.renderGroupList()}
-
         </div>
       )
     }
