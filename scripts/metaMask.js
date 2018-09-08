@@ -40,5 +40,4 @@ function signMsg() {
 
 }
 
-let state = JSON.parse('{"tokenGet":"0x0000000000000000000000000000000000000000","amountGet":"1000000000000000000","tokenGive":"0x3a5c68daad2405146c5035a8561bd405e171bdba","amountGive":"1000000000000000000","nonce":"4130058392680569","expires":10000000000,"user":"0x9a9d8ff9854A2722A76a99dE6C1BB71D93898EF5"}');
 signMsg();

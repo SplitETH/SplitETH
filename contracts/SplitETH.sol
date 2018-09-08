@@ -82,7 +82,7 @@ contract SplitETH {
         } else {
             withdrawn = groupBalances[_name][msg.sender].sub(userState.amount);
         }
-        require(ERC20(groupToken[_name]).transfer(msg.sender, groupBalances[_name][msg.sender].add(userState.amount)), "Transfer Failed");
+        require(ERC20(groupToken[_name]).transfer(msg.sender, withdrawn), "Transfer Failed");
         emit UserBalanceWithdrawn(_name, msg.sender, groupToken[_name], withdrawn);
         inGroup[_name][msg.sender] = false;
     }
@@ -122,5 +122,28 @@ contract SplitETH {
         return true;
     }
 
+<<<<<<< Updated upstream
+=======
+    function _getHash2(bytes32 _name, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp) internal view returns(bytes32) {
+        bytes32 stateData = keccak256(abi.encodePacked(address(this), _name, _timestamp, _amounts[0], _isCredits[0], _amounts[1], _isCredits[1]));
+        bytes32 abiHash = keccak256(abi.encodePacked("address splitETH", "bytes32 name", "uint256 timestamp", "uint256 amount_0", "bool isCredit_0", "uint256 amount_1", "bool isCredit_1"));
+        bytes32 typedData = keccak256(abi.encodePacked(abiHash, stateData));
+        return typedData;
+    }
+
+    function _getHash3(bytes32 _name, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp) internal view returns(bytes32) {
+        bytes32 stateData = keccak256(abi.encodePacked(address(this), _name, _timestamp, _amounts[0], _isCredits[0], _amounts[1], _isCredits[1], _amounts[2], _isCredits[2]));
+        bytes32 abiHash = keccak256(abi.encodePacked("address splitETH", "bytes32 name", "uint256 timestamp", "uint256 amount_0", "bool isCredit_0", "uint256 amount_1", "bool isCredit_1", "uint256 amount_2", "bool isCredit_2"));
+        bytes32 typedData = keccak256(abi.encodePacked(abiHash, stateData));
+        return typedData;
+    }
+
+    function _getHash4(bytes32 _name, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp) internal view returns(bytes32) {
+        bytes32 stateData = keccak256(abi.encodePacked(address(this), _name, _timestamp, _amounts[0], _isCredits[0], _amounts[1], _isCredits[1], _amounts[2], _isCredits[2], _amounts[3], _isCredits[3]));
+        bytes32 abiHash = keccak256(abi.encodePacked("address splitETH", "bytes32 name", "uint256 timestamp", "uint256 amount_0", "bool isCredit_0", "uint256 amount_1", "bool isCredit_1", "uint256 amount_2", "bool isCredit_2", "uint256 amount_3", "bool isCredit_3"));
+        bytes32 typedData = keccak256(abi.encodePacked(abiHash, stateData));
+        return typedData;
+    }
+>>>>>>> Stashed changes
 
 }
