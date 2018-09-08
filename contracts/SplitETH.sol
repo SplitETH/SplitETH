@@ -60,7 +60,6 @@ contract SplitETH {
     }
 
     function updateGroup(bytes32 _name, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp, uint8[] _vs, bytes32[] _rs, bytes32[] _ss) public {
-        //Check it sums to 0
         require(inGroup[_name][msg.sender], "User is not in group");
         require(groupNonce[_name] < _timestamp);
         require(groupCloseTime[_name] != 0, "Group not closed");
@@ -116,7 +115,7 @@ contract SplitETH {
         return true;
     }
 
-    function checkSig(bytes32 _name, address _user, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp, uint8 _v, bytes32 _r, bytes32 _s) public view returns(bool) {
+    function checkSig(bytes32 _name, address _user, uint256[] _amounts, bool[] _isCredits, uint256 _timestamp, uint8 _v, bytes32 _r, bytes32 _s) public pure returns(bool) {
         require(_amounts.length == _isCredits.length, "Incorrect isCredits length");
         bytes32 dataToBeSigned = keccak256(abi.encodePacked(_name, _amounts, _isCredits, _timestamp));
         require(_user == ecrecover(dataToBeSigned, _v, _r, _s), "Signature mismatch");

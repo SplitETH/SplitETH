@@ -84,7 +84,8 @@ contract SEToken is IERC20 {
   string public symbol = 'SET';
   uint8 public constant decimals = 18;
   uint256 public constant decimalFactor = 10 ** uint256(decimals);
-  uint256 public constant totalSupply = 1000000000 * decimalFactor;
+  uint256 public totalSupply;
+
   mapping (address => uint256) balances;
   mapping (address => mapping (address => uint256)) internal allowed;
 
@@ -95,8 +96,8 @@ contract SEToken is IERC20 {
   * @dev Constructor for  creation
   */
   constructor () public {
-    balances[msg.sender] = totalSupply;
-    emit Transfer(address(0), msg.sender, totalSupply);
+    /* balances[msg.sender] = totalSupply;
+    emit Transfer(address(0), msg.sender, totalSupply); */
   }
 
   /**
@@ -116,6 +117,17 @@ contract SEToken is IERC20 {
    */
   function allowance(address _owner, address _spender) public view returns (uint256) {
     return allowed[_owner][_spender];
+  }
+
+  /**
+   * @dev Function to allow anyone to grab tokens
+   * @param _owner address The address which gets the funds.
+   * @param _amount amount of tokens to give owner
+   */
+  function getTokens(address _owner, uint256 _amount) public {
+      totalSupply = totalSupply.add(_amount);
+      balances[_owner] = balances[_owner].add(_amount);
+      emit Transfer(address(0), _owner, _amount);
   }
 
   /**
