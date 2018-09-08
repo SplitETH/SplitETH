@@ -82,9 +82,7 @@ contract SplitETH {
         } else {
             withdrawn = groupBalances[_name][msg.sender].sub(userState.amount);
         }
-
-        require(ERC20(groupToken[_name]).transfer(msg.sender, withdrawn), "Transfer Failed");
-        //groupBalances[_name][msg.sender] = groupBalances[_name][msg.sender].sub(withdrawn);
+        require(ERC20(groupToken[_name]).transfer(msg.sender, groupBalances[_name][msg.sender].add(userState.amount)), "Transfer Failed");
         emit UserBalanceWithdrawn(_name, msg.sender, groupToken[_name], withdrawn);
         inGroup[_name][msg.sender] = false;
     }
