@@ -14,6 +14,8 @@ import {
   Link
 } from 'react-router-dom'
 
+import SETokenJSON from '../build/contracts/SEToken.json'
+
 class Channel extends Component {
 
   constructor(props) {
@@ -34,6 +36,9 @@ class Channel extends Component {
     const splitETHAddress = SplitETHJSON.networks[15].address;
     const splitETHABI = SplitETHJSON.abi;
 
+    const SETAddress = SETokenJSON.networks[15].address;
+    const SETABI = SETokenJSON.abi;
+
     const pabloC = new props.web3.eth.Contract(PabloABI,pabloAddress);
     const pabloC_event = new props.web3WH.eth.Contract(PabloABI,pabloAddress);
     pabloC_event.setProvider(props.web3WH.currentProvider);
@@ -41,6 +46,10 @@ class Channel extends Component {
     const splitETH = new props.web3.eth.Contract(splitETHABI,splitETHAddress);
     const splitETH_event = new props.web3WH.eth.Contract(splitETHABI,splitETHAddress);
     splitETH_event.setProvider(props.web3WH.currentProvider);
+
+    const seToken = new props.web3.eth.Contract(SETABI,SETAddress);
+    const seToken_event = new props.web3WH.eth.Contract(SETABI,SETAddress);
+    seToken_event.setProvider(props.web3WH.currentProvider);
 
 
     this.state = {
@@ -51,13 +60,16 @@ class Channel extends Component {
       pabloC_event:pabloC_event,
       splitETH:splitETH,
       splitETH_event:splitETH_event,
+      seToken:seToken,
       myValue:0,
       selectedOption:0,
       name: '',
       friends: [{ address: '' }],
       groups: []
     };
-    }
+
+    //console.log(this.state.seToken._address);
+  }
 
     async componentDidMount(){
 
@@ -161,18 +173,21 @@ class Channel extends Component {
       var user = event.target.User.value;
       var amount = event.target.Amount.value;
 
-      await this.state.splitETH.methods.fundUser(
-        groupName,
-        user,
-        amount
-      ).send({from:this.state.accounts[0]})
-      .then(function(receipt){
-        //console.log(web3.utils.toAscii(receipt.events.GroupCreated.returnValues._name));
-      //  alert(_this.state.web3.utils.toAscii(receipt.events.GroupCreated.returnValues._name) + " Successfully created!");
+      await this.state.seToken.methods.approve(this.state.splitETH._address,_this.state.web3.utils.toWei(amount,"ether"))
+      .send({from:this.state.accounts[0]})
+      .then(function(receipt_){
+          _this.state.splitETH.methods.fundUser(
+          groupName,
+          user,
+          _this.state.web3.utils.toWei(amount,"ether")
+        ).send({from:_this.state.accounts[0]})
+        .then(function(receipt){
         _this.setState({selectedOption:0});
-        _this.getGroups();
-      // receipt can also be a new contract instance, when coming from a "contract.deploy({...}).send()"
+          _this.getGroups();
+        });
       });
+
+
     }
 
     async handleClick(event) {
@@ -278,9 +293,9 @@ class Channel extends Component {
                     </FormGroup>
 
                   <FormGroup row>
-                    <Label for="TokenAddress" sm={2}>Token Address: </Label>
+                    <Label for="TokenAddress" sm={2}>DAI Token Address: </Label>
                     <Col sm={10}>
-                      <Input type="text" name="TokenAddress" placeholder="0xabcdef" />
+                      <Input type="text" name="TokenAddress" placeholder="0xabcdef" disabled value={this.state.seToken._address}/>
                     </Col>
                   </FormGroup>
                   <FormGroup row>
@@ -319,13 +334,13 @@ class Channel extends Component {
                   <FormGroup row>
                     <Label for="User" sm={2}>User: </Label>
                     <Col sm={10}>
-                      <Input type="text" name="User" placeholder="0x123" />
+                      <Input type="text" name="User" placeholder="0x123" disabled value={this.state.accounts[0]}/>
                     </Col>
                   </FormGroup>
                   <FormGroup row>
-                    <Label for="Amount" sm={2}>Amount: </Label>
+                    <Label for="Amount" sm={2}>DAI Amount: </Label>
                     <Col sm={10}>
-                      <Input type="text" name="Amount" placeholder="1.5" />
+                      <Input type="text" name="Amount" placeholder="125" />
                     </Col>
                   </FormGroup>
                   <FormGroup check row>
@@ -379,7 +394,7 @@ class Channel extends Component {
         }
 
         return(
-          <li key={i}>{participantItem.address} - Balance: {participant.balance}
+          <li key={i}>{participantItem.address} - Balance: {this.state.web3.utils.fromWei(participant.balance,"ether")} DAI
           </li>
         )
       })
@@ -391,7 +406,7 @@ class Channel extends Component {
         <td> <Button color="primary" size="sm" onClick={() => this.handleJoinChannel(group.name)}>Add Balance</Button></td>
         <td><Link href="" to={"/expenses/"+group.name}>Manage Expenses</Link></td>
         <td>
-          <Button color="danger" size="sm" onClick={() => this.handleCloseChannel(group.name)}>CLOSE</Button>
+          <div><Button color="danger" size="sm" onClick={() => this.handleCloseChannel(group.name)}>CLOSE</Button></div>
           <Button color="info" size="sm" onClick={() => this.handlePullFundsFromChannel(group.name)}>Pull Funds</Button>
         </td>
 
