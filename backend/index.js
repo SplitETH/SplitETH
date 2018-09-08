@@ -129,7 +129,7 @@ const main = async () => {
 
             bill.signatures.push(req.body.signature);
 
-            if (bill.signatures.length == numParticipants) {
+            if (bill.signatures.length === group.numParticipants) {
                 bill.fullySigned = true;
             }
 
