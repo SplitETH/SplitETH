@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import Web3 from 'web3';
 
 import {
   BrowserRouter as Router,
-  Route,
-  Link
-} from 'react-router-dom'
+  Route} from 'react-router-dom'
 
 import Channel from './components/Channel'
 import NavBar from './components/NavBar'
@@ -50,11 +47,11 @@ class App extends Component {
               <NavBar web3={this.state.web3} web3WH={this.state.web3WH} />
             </div>
 
-            <Route exact path='/' render={(props) => <Channel web3={this.state.web3} web3WH={this.state.web3WH} />}/>
+            <Route exact path='/' render={() => <Channel web3={this.state.web3} web3WH={this.state.web3WH} />}/>
             <Route path="/about" component={About}/>
             <Route path='/expenses/:channelID' render={(props) => <Expenses web3={this.state.web3} web3WH={this.state.web3WH} match={props.match} />}/>
 
-            <Route path="/wallet" render={(props) => <Wallet web3={this.state.web3} web3WH={this.state.web3WH} />}/>
+            <Route path="/wallet" render={() => <Wallet web3={this.state.web3} web3WH={this.state.web3WH} />}/>
           </div>
         </Router>
       </div>

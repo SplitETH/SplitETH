@@ -2,18 +2,14 @@ import React, { Component } from 'react';
 import {BigNumber} from 'bignumber.js';
 import SplitETHJSON from '../build/contracts/SplitETH.json'
 import { Container, Row, Col } from 'reactstrap';
-import { Button, Form, FormGroup, Label, Input, FormText, Table } from 'reactstrap';
-
-import EthBalanceDisplay from './EthBalanceDisplay'
-
+import { Button, Form, FormGroup, Label, Input, Table } from 'reactstrap';
 
 import {
-  BrowserRouter as Router,
-  Route,
   Link
 } from 'react-router-dom'
-
 import SETokenJSON from '../build/contracts/SEToken.json'
+
+export const NETWORK_ID = 19;
 
 class Channel extends Component {
 
@@ -31,7 +27,7 @@ class Channel extends Component {
     const splitETHAddress = SplitETHJSON.networks[15].address;
     const splitETHABI = SplitETHJSON.abi;
 
-    const SETAddress = SETokenJSON.networks[15].address;
+    const SETAddress = SETokenJSON.networks[NETWORK_ID].address;
     const SETABI = SETokenJSON.abi;
 
     const splitETH = new props.web3.eth.Contract(splitETHABI,splitETHAddress);
@@ -87,7 +83,7 @@ class Channel extends Component {
       this.state.splitETH_event.getPastEvents('GroupCreated', {
           fromBlock: 0,
           toBlock: 'latest'
-      }, function(error, events){})
+      }, function(){})
       .then(async function(events){
         _this.setState({
           groups: []
@@ -163,13 +159,13 @@ class Channel extends Component {
 
       await this.state.seToken.methods.approve(this.state.splitETH._address,_this.state.web3.utils.toWei(amount,"ether"))
       .send({from:this.state.accounts[0]})
-      .then(function(receipt_){
+      .then(function(){
           _this.state.splitETH.methods.fundUser(
           groupName,
           user,
           _this.state.web3.utils.toWei(amount,"ether")
         ).send({from:_this.state.accounts[0]})
-        .then(function(receipt){
+        .then(function(){
         _this.setState({selectedOption:0});
           _this.getGroups();
         });
@@ -177,7 +173,6 @@ class Channel extends Component {
 
 
     }
-
 
     async handleNewChannel(event) {
       //console.log(event.target.myValueInput.value);
@@ -223,7 +218,7 @@ class Channel extends Component {
 
     }
 
-    handleChange(event) {
+    handleChange() {
       //this.setState({myValue: event.target.value});
     }
 
@@ -422,7 +417,6 @@ class Channel extends Component {
           {this.renderSelectedOption()}
 
           {this.renderGroupList()}
-
         </div>
       )
     }
