@@ -5,6 +5,15 @@ import SplitETHJSON from '../build/contracts/SplitETH.json'
 import { Container, Row, Col } from 'reactstrap';
 import { Button, Form, FormGroup, Label, Input, FormText, Table } from 'reactstrap';
 
+import EthBalanceDisplay from './EthBalanceDisplay'
+
+
+import {
+  BrowserRouter as Router,
+  Route,
+  Link
+} from 'react-router-dom'
+
 class Channel extends Component {
 
   constructor(props) {
@@ -286,7 +295,7 @@ class Channel extends Component {
     const listItems = this.state.groups.map((group) => {
 
       const participantsItems = group.friends.map((participant,i) => {
-        console.log(i,participant);
+
         return(
           <li key={i}>{participant}</li>
         )
@@ -296,6 +305,7 @@ class Channel extends Component {
         <th scope="row">{group.name}</th>
         <td>{participantsItems}</td>
         <td>{group.timeout}</td>
+        <td><Link href="" to={"/expenses/"+group.name}>Manage Expenses</Link></td>
       </tr>);
     });
 
@@ -306,6 +316,7 @@ class Channel extends Component {
             <th>Group Name</th>
             <th>Participants</th>
             <th>Timeout</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -318,7 +329,7 @@ class Channel extends Component {
     render() {
       return (
         <div className="NewChannel-Container">
-          <p>Create a New Channel</p>
+
           <Button color="primary" size="lg" block onClick={this.handleNewChannel}>Create New Channel</Button>
           <Button color="secondary" size="lg" block onClick={this.handleJoinChannel}>Join Existing Channel</Button>
 
