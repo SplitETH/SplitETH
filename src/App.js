@@ -10,6 +10,7 @@ import {
 } from 'react-router-dom'
 
 import Pablo from './components/Pablo'
+import Channel from './components/Channel'
 import NavBar from './components/NavBar'
 import Wallet from './components/Wallet'
 
@@ -49,7 +50,7 @@ class App extends Component {
               <NavBar web3={this.state.web3} web3WH={this.state.web3WH} />
             </div>
 
-            <Route exact path='/' render={(props) => <Pablo web3={this.state.web3} web3WH={this.state.web3WH} />}/>
+            <Route exact path='/' render={(props) => <Channel web3={this.state.web3} web3WH={this.state.web3WH} />}/>
             <Route path="/about" component={About}/>
             <Route path="/wallet" render={(props) => <Wallet web3={this.state.web3} web3WH={this.state.web3WH} />}/>
           </div>

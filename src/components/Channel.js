@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {BigNumber} from 'bignumber.js';
 import PabloJSON from '../build/contracts/Pablo.json'
 
-class Pablo extends Component {
+class Channel extends Component {
 
   constructor(props) {
     super(props);
@@ -68,7 +68,7 @@ class Pablo extends Component {
     render() {
       return (
         <div>
-          <p>Hola</p>
+          <p>Create a New Channel</p>
           <p className="App-intro">
             Your value is: {this.state.myValue}
           </p>
@@ -84,4 +84,4 @@ class Pablo extends Component {
     }
   }
 
-  export default Pablo;
+  export default Channel;
