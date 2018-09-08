@@ -189,10 +189,13 @@ class Channel extends Component {
       this.setState({selectedOption:1});
     }
 
-    async handleJoinChannel(event) {
-      //console.log(event.target.myValueInput.value);
-      event.preventDefault();
-      this.setState({selectedOption:2});
+    async handleJoinChannel(group) {
+      console.log(group);
+      //event.preventDefault();
+      this.setState({
+        selectedOption:2,
+        selectedGroup:group
+      });
     }
 
     handleChange(event) {
@@ -280,7 +283,7 @@ class Channel extends Component {
                   <FormGroup row>
                     <Label for="GroupName" sm={2}>Group: </Label>
                     <Col sm={10}>
-                      <Input type="text" name="GroupName" placeholder="Berlin" />
+                      <Input type="text" disabled name="GroupName" placeholder="Berlin" value={this.state.selectedGroup} />
                     </Col>
                   </FormGroup>
                   <FormGroup row>
@@ -346,7 +349,8 @@ class Channel extends Component {
         }
 
         return(
-          <li key={i}>{participantItem.address} - Balance: {participant.balance}</li>
+          <li key={i}>{participantItem.address} - Balance: {participant.balance}
+          </li>
         )
       })
 
@@ -354,6 +358,7 @@ class Channel extends Component {
         <th scope="row">{group.name}</th>
         <td>{participantsItems}</td>
         <td>{group.timeout}</td>
+        <td> <Button color="primary" size="sm" onClick={() => this.handleJoinChannel(group.name)}>Add Balance</Button></td>
         <td><Link href="" to={"/expenses/"+group.name}>Manage Expenses</Link></td>
       </tr>);
     });
@@ -379,8 +384,8 @@ class Channel extends Component {
       return (
         <div className="NewChannel-Container">
 
-          <Button color="primary" size="lg" block onClick={this.handleNewChannel}>Create New Channel</Button>
-          <Button color="secondary" size="lg" block onClick={this.handleJoinChannel}>Join Existing Channel</Button>
+          <Button color="primary" size="lg" block onClick={this.handleNewChannel}>Create New Group</Button>
+          {/* <Button color="secondary" size="lg" block onClick={this.handleJoinChannel}>Join Existing Channel</Button> */}
 
           {this.renderSelectedOption()}
 
