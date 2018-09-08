@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import { Container, Row, Col } from 'reactstrap';
-import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
-import PabloJSON from '../build/contracts/Pablo.json'
 import SplitETHJSON from '../build/contracts/SplitETH.json'
 import { NETWORK_ID } from './Channel';
 import BigNumber from 'bignumber.js';
@@ -10,7 +7,19 @@ const cleanAsciiText = text => text && text.replace(/[\x00-\x09\x0b-\x1F]/g, '')
 
 const TOKEN = (token) => new BigNumber(token).multipliedBy((new BigNumber(10)).pow(18));
 
-const printNumber = (number) => `$${BigNumber.isBigNumber(number) ? number.div((new BigNumber(10)).pow(18)).toFixed() : number}`;
+const printNumber = (number) => {
+  if (BigNumber.isBigNumber(number)) {
+    const fixedNumber = number.div((new BigNumber(10)).pow(18)).toFixed();
+
+    if (fixedNumber.indexOf('-') === 0) {
+      return `-$${fixedNumber.slice(1, fixedNumber.length)}`;
+    }
+
+    return `$${fixedNumber}`;
+  }
+
+  return number;
+}
 
 const getAddressName = (address, showAddress = true) => {
   address = address.toLowerCase();
@@ -56,7 +65,7 @@ class Expenses extends Component {
           to: to,
           value: amount
       })
-      .then(function(receipt){
+      .then(function(){
           alert("Transaction successfully completed!");
       });
     }
@@ -76,15 +85,8 @@ class Expenses extends Component {
     setupContracts() {
       const props = this.props;
 
-      const pabloAddress = PabloJSON.networks[NETWORK_ID].address;
-      const PabloABI = PabloJSON.abi;
-
       const splitETHAddress = SplitETHJSON.networks[NETWORK_ID].address;
       const splitETHABI = SplitETHJSON.abi;
-
-      const pabloC = new props.web3.eth.Contract(PabloABI,pabloAddress);
-      const pabloC_event = new props.web3WH.eth.Contract(PabloABI,pabloAddress);
-      pabloC_event.setProvider(props.web3WH.currentProvider);
 
       const splitETH = new props.web3.eth.Contract(splitETHABI,splitETHAddress);
       const splitETH_event = new props.web3WH.eth.Contract(splitETHABI,splitETHAddress);
@@ -102,7 +104,7 @@ class Expenses extends Component {
         this.state.splitETH_event.getPastEvents('GroupCreated', {
             fromBlock: 0,
             toBlock: 'latest'
-        }, function(error, events){})
+        }, function(){})
         .then(async function(events){
           const groups = [];
 

@@ -1,28 +1,20 @@
 import React, { Component } from 'react';
-import {BigNumber} from 'bignumber.js';
-import PabloJSON from '../build/contracts/Pablo.json'
 import SplitETHJSON from '../build/contracts/SplitETH.json'
 import { Container, Row, Col } from 'reactstrap';
-import { Button, Form, FormGroup, Label, Input, FormText, Table } from 'reactstrap';
-
-import EthBalanceDisplay from './EthBalanceDisplay'
-
+import { Button, Form, FormGroup, Label, Input, Table } from 'reactstrap';
 
 import {
-  BrowserRouter as Router,
-  Route,
   Link
 } from 'react-router-dom'
 import SETokenJSON from '../build/contracts/SEToken.json'
 
-export const NETWORK_ID = 15;
+export const NETWORK_ID = 19;
 
 class Channel extends Component {
 
   constructor(props) {
     super(props);
 
-    this.handleClick = this.handleClick.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleNewChannel = this.handleNewChannel.bind(this);
     this.handleJoinChannel = this.handleJoinChannel.bind(this);
@@ -31,18 +23,11 @@ class Channel extends Component {
     this.handleSubmitJoinChannel = this.handleSubmitJoinChannel.bind(this);
     this.handlePullFundsFromChannel = this.handlePullFundsFromChannel.bind(this);
 
-    const pabloAddress = PabloJSON.networks[NETWORK_ID].address;
-    const PabloABI = PabloJSON.abi;
-
     const splitETHAddress = SplitETHJSON.networks[NETWORK_ID].address;
     const splitETHABI = SplitETHJSON.abi;
 
     const SETAddress = SETokenJSON.networks[NETWORK_ID].address;
     const SETABI = SETokenJSON.abi;
-
-    const pabloC = new props.web3.eth.Contract(PabloABI,pabloAddress);
-    const pabloC_event = new props.web3WH.eth.Contract(PabloABI,pabloAddress);
-    pabloC_event.setProvider(props.web3WH.currentProvider);
 
     const splitETH = new props.web3.eth.Contract(splitETHABI,splitETHAddress);
     const splitETH_event = new props.web3WH.eth.Contract(splitETHABI,splitETHAddress);
@@ -56,9 +41,6 @@ class Channel extends Component {
     this.state = {
       web3: props.web3,
       web3WH: props.web3WH,
-      PabloABI:PabloABI,
-      pabloC:pabloC,
-      pabloC_event:pabloC_event,
       splitETH:splitETH,
       splitETH_event:splitETH_event,
       seToken:seToken,
@@ -80,18 +62,6 @@ class Channel extends Component {
         this.setState({accounts:accounts});
       });
 
-      this.state.pabloC.methods.myData().call().then( result => {
-        this.setState({myValue:result});
-      });
-
-      // this.state.splitETH_event.events.GroupCreated({ fromBlock: 'latest', toBlock: 'latest' })
-      // .on('data', event => {
-      //     //console.log("QQQ",event.returnValues._message);
-      //     this.state.pabloC.methods.myData().call().then( result => {
-      //       console.log("PAPA",result);
-      //       this.setState({myValue:result});
-      //     });
-      // });
       this.getGroups();
     }
 
@@ -100,7 +70,7 @@ class Channel extends Component {
       this.state.splitETH_event.getPastEvents('GroupCreated', {
           fromBlock: 0,
           toBlock: 'latest'
-      }, function(error, events){})
+      }, function(){})
       .then(async function(events){
         _this.setState({
           groups: []
@@ -176,29 +146,19 @@ class Channel extends Component {
 
       await this.state.seToken.methods.approve(this.state.splitETH._address,_this.state.web3.utils.toWei(amount,"ether"))
       .send({from:this.state.accounts[0]})
-      .then(function(receipt_){
+      .then(function(){
           _this.state.splitETH.methods.fundUser(
           groupName,
           user,
           _this.state.web3.utils.toWei(amount,"ether")
         ).send({from:_this.state.accounts[0]})
-        .then(function(receipt){
+        .then(function(){
         _this.setState({selectedOption:0});
           _this.getGroups();
         });
       });
 
 
-    }
-
-    async handleClick(event) {
-      console.log(event.target.myValueInput.value);
-      event.preventDefault();
-      await this.state.pabloC.methods.setData(event.target.myValueInput.value).send({from:this.state.accounts[0]})
-      .then(function(receipt){
-        //console.log(receipt);
-      // receipt can also be a new contract instance, when coming from a "contract.deploy({...}).send()"
-      });
     }
 
     async handleNewChannel(event) {
@@ -245,7 +205,7 @@ class Channel extends Component {
 
     }
 
-    handleChange(event) {
+    handleChange() {
       //this.setState({myValue: event.target.value});
     }
 
