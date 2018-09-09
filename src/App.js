@@ -3,7 +3,7 @@ import './App.css';
 import Web3 from 'web3';
 
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,
   Route} from 'react-router-dom'
 
 import Channel from './components/Channel'

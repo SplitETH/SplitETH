@@ -2,6 +2,7 @@
   "name": "spliteth",
   "version": "0.1.0",
   "private": true,
+  "homepage": "./",
   "dependencies": {
     "bignumber.js": "^7.2.1",
     "bootstrap": "^4.1.3",

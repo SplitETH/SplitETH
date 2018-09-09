@@ -5,7 +5,7 @@ import BigNumber from 'bignumber.js';
 import { Button, FormGroup, Input, Col } from 'reactstrap';
 import $ from 'jquery';
 
-export const API_HOST = 'http://ec2-54-93-114-108.eu-central-1.compute.amazonaws.com:3001/';
+export const API_HOST = 'http://ec2-54-93-114-108.eu-central-1.compute.amazonaws.com:3001';
 
 export const cleanAsciiText = text => text && text.replace(/[\x00-\x09\x0b-\x1F]/g, '').trim();
 
