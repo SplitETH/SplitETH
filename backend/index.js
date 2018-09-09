@@ -95,9 +95,16 @@ const main = async () => {
 
     app.get('/group/:group_id/bills', async (req, res) => {
         GroupModel.findOne({ name: req.params.group_id }, (err, group) => {
-            res.json(group.bills);
+            res.json(group && group.bills);
         });
     });
+
+    app.get('/group/:group_id/last-bill-signed', async (req, res) => {
+        GroupModel.findOne({ name: req.params.group_id }, (err, group) => {
+            res.json(group && group.bills && group.bills.find(bill => bill.fullySigned));
+        });
+    });
+
 
     app.get('/group/:group_id/bills_not_signed/:address_id', async (req, res) => {
         GroupModel.findOne({ name: req.params.group_id }, (err, group) => {

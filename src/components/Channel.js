@@ -4,6 +4,7 @@ import SplitETHJSON from '../build/contracts/SplitETH.json'
 import { Container, Row, Col } from 'reactstrap';
 import { Button, Form, FormGroup, Label, Input, Table } from 'reactstrap';
 import $ from 'jquery';
+import { cleanAsciiText, toWei } from './Expenses';
 
 import {
   Link
@@ -205,18 +206,83 @@ class Channel extends Component {
       });
     }
 
+    async getLastBillSigned(groupName) {
+      return new Promise(resolve => {
+        console.debug('before get', groupName);
+        const stringifiedName = cleanAsciiText(groupName);
+        console.debug(stringifiedName);
+        $.get(`${API_HOST}/group/${stringifiedName}/last-bill-signed`, (data) => {
+          console.log('data callback for postGroupToAPI', data);
+
+          resolve(data);
+        });
+      });
+    }
+
     async handleCloseChannel(group) {
+      console.debug('handleClosechannel', group);
+
+      const lastBillSigned = await this.getLastBillSigned(group);
+
+      console.debug('handleCloseChannel', {
+        lastBillSigned
+      });
+
       console.log(group);
       var _this = this;
-      await this.state.splitETH.methods.closeGroup(
+
+      const addressMapping = {
+
+      };
+
+      const vArray = [];
+      const rArray = [];
+      const sArray = [];
+      const weiArray = [];
+      const signArray = [];
+
+      lastBillSigned.signatures.map(signature => {
+        addressMapping[signature.signer.toLowerCase()] = signature;
+      });
+
+      lastBillSigned.totalBalanceChange.map((entry, index) => {
+        const sign = parseInt(entry.value) >= 0;
+        const wei = toWei(entry.value).toString();
+
+        console.debug("!!", {
+          sign,
+          wei
+        });
+
+        addressMapping[entry.address.toLowerCase()].wei = wei;
+        addressMapping[entry.address.toLowerCase()].sign = sign;;
+      });
+
+
+
+      for (let address of Object.keys(addressMapping)) {
+        const entry = addressMapping[address];
+
+        vArray.push(entry.v);
+        rArray.push(entry.r);
+        sArray.push(entry.s);
+        weiArray.push((new BigNumber(entry.wei).absoluteValue().toString()));
+        signArray.push(entry.sign);
+      }
+
+      const parameters = [
         this.state.web3.utils.fromAscii(group),
-        [_this.state.web3.utils.toWei("25"),_this.state.web3.utils.toWei("25")],
-        [false,true],
-        1536479276449,
-        ["27","28"],
-        ["0xb0b710f55877751c8b54a489388e33f8c59b99d73722ebbb44dd95b4b6e1ef19","0x5058a0097b79bfc0f93a2ad35a23709bc570be4ddad77c3cb0c6ebc0d21f6b0d"],
-        ["0x5bae36f41dbd66e0efe06b17346f3206a14dd5645c4c529f4b4db0de2eaa3ec4","0x0ea1023a5da1e7e976f9ee0c47931b4dbe91ba7797d0617a16795d8cefca00e2"]
-      ).send({from:this.state.accounts[0]})
+        weiArray,
+        signArray,
+        lastBillSigned.timestamp,
+        vArray,
+        rArray,
+        sArray
+      ];
+
+      console.log('closeChannel', parameters);
+
+      await this.state.splitETH.methods.closeGroup(...parameters).send({from:this.state.accounts[0]})
       .then(function(receipt){
         console.log(receipt);
         _this.getGroups();

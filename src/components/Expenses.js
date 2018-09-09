@@ -7,9 +7,9 @@ import $ from 'jquery';
 
 export const API_HOST = 'http://ec2-54-93-114-108.eu-central-1.compute.amazonaws.com:3001/';
 
-const cleanAsciiText = text => text && text.replace(/[\x00-\x09\x0b-\x1F]/g, '').trim();
+export const cleanAsciiText = text => text && text.replace(/[\x00-\x09\x0b-\x1F]/g, '').trim();
 
-const toWei = (token) => new BigNumber(token).multipliedBy((new BigNumber(10)).pow(18));
+export const toWei = (token) => new BigNumber(token).multipliedBy((new BigNumber(10)).pow(18));
 
 const printNumber = (number) => {
   if (BigNumber.isBigNumber(number)) {
