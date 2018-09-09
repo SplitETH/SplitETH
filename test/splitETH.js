@@ -55,6 +55,7 @@ contract('SplitETH', function (accounts) {
         const splitETH = await SplitETH.deployed();
         const token = await SEToken.deployed();
         let state = {amounts: [15, 5, 20], isCredits: [false, false, true], timestamp: 1, name: "ETHBerlin", contract: splitETH.address};
+        console.log(JSON.stringify(state));
         let vs = [];
         let rs = [];
         let ss = [];

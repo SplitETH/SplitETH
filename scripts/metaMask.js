@@ -1,18 +1,21 @@
 function signMsg() {
 
+//  {"amounts":[15,5,20],"isCredits":[false,false,true],"timestamp":1,"name":"ETHBerlin","contract":"0xcf943c666c7e5619d3a26099732d7caf64594c95"}
+
+
   let msgParams = [
-    {type: 'address', name: 'splitETH', value: '0x348f1e3cfec548d41e9b16ada985ffce1bc0df65'},
+    {type: 'address', name: 'splitETH', value: '0xcf943c666c7e5619d3a26099732d7caf64594c95'},
     {type: 'bytes32', name: 'name', value: "ETHBerlin"},
     {type: 'uint256', name: 'timestamp', value: 1},
-    {type: 'uint256', name: 'amount_0', value: 100},
+    {type: 'uint256', name: 'amount_0', value: 15},
     {type: 'bool', name: 'isCredit_0', value: false},
-    {type: 'uint256', name: 'amount_1', value: 150},
+    {type: 'uint256', name: 'amount_1', value: 5},
     {type: 'bool', name: 'isCredit_1', value: false},
-    {type: 'uint256', name: 'amount_2', value: 250},
+    {type: 'uint256', name: 'amount_2', value: 20},
     {type: 'bool', name: 'isCredit_2', value: true},
   ];
 
-  let from = "0x7c6cd0b60038c6c7fa916d3abb10598bc37cf9bb";
+  let from = "0xb4d282d27ac377519e80982cfff8927eb2adf440";
 
   web3.currentProvider.sendAsync({
     method: 'eth_signTypedData',

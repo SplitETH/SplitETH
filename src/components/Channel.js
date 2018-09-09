@@ -11,7 +11,7 @@ import {
 import SETokenJSON from '../build/contracts/SEToken.json'
 import { API_HOST } from './Expenses';
 
-export const NETWORK_ID = 15;
+export const NETWORK_ID = 42;
 
 class Channel extends Component {
 
