@@ -210,12 +210,12 @@ class Channel extends Component {
       var _this = this;
       await this.state.splitETH.methods.closeGroup(
         this.state.web3.utils.fromAscii(group),
-        [_this.state.web3.utils.toWei("100"),_this.state.web3.utils.toWei("100")],
+        [_this.state.web3.utils.toWei("25"),_this.state.web3.utils.toWei("25")],
         [false,true],
-        1212121,
-        [],
-        [],
-        []
+        1536479276449,
+        ["27","28"],
+        ["0xb0b710f55877751c8b54a489388e33f8c59b99d73722ebbb44dd95b4b6e1ef19","0x5058a0097b79bfc0f93a2ad35a23709bc570be4ddad77c3cb0c6ebc0d21f6b0d"],
+        ["0x5bae36f41dbd66e0efe06b17346f3206a14dd5645c4c529f4b4db0de2eaa3ec4","0x0ea1023a5da1e7e976f9ee0c47931b4dbe91ba7797d0617a16795d8cefca00e2"]
       ).send({from:this.state.accounts[0]})
       .then(function(receipt){
         console.log(receipt);

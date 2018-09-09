@@ -66,7 +66,7 @@ contract SplitETH {
         require(_amounts.length == _isCredits.length, "Invalid state lengths");
         require(_amounts.length == groupUsers[_name].length, "Invalid user lengths");
         require(now <= groupCloseTime[_name], "Challenge period not active");
-        //require(checkSigs(_name, _amounts, _isCredits, _timestamp, _vs, _rs, _ss), "Invalid sigs");
+        require(checkSigs(_name, _amounts, _isCredits, _timestamp, _vs, _rs, _ss), "Invalid sigs");
         require(_updateState(_name, _amounts, _isCredits, _timestamp), "Invalid state");
         emit GroupUpdated(_name, now);
     }
