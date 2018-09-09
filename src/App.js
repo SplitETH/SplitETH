@@ -25,7 +25,7 @@ class App extends Component {
     // Web3 providers
     const web3 = new Web3(Web3.givenProvider || "http://kovan.infura.io");
     const web3WH = new Web3();
-    const eventProvider = new Web3.providers.WebsocketProvider('wss://kovan.infura.io/ws')
+    const eventProvider = new Web3.providers.WebsocketProvider('wss://rarely-suitable-shark.quiknode.io/87817da9-942d-4275-98c0-4176eee51e1a/aB5gwSfQdN4jmkS65F1HyA==/')
     web3WH.setProvider(eventProvider)
 
     this.state = {
