@@ -26,7 +26,7 @@ class Channel extends Component {
     this.handleSubmitJoinChannel = this.handleSubmitJoinChannel.bind(this);
     this.handlePullFundsFromChannel = this.handlePullFundsFromChannel.bind(this);
 
-    const splitETHAddress = SplitETHJSON.networks[15].address;
+    const splitETHAddress = SplitETHJSON.networks[NETWORK_ID].address;
     const splitETHABI = SplitETHJSON.abi;
 
     const SETAddress = SETokenJSON.networks[NETWORK_ID].address;
@@ -153,7 +153,7 @@ class Channel extends Component {
     async postGroupToAPI(groupName, participantsAmount) {
       return new Promise(resolve => {
         $.post(`${API_HOST}/group`, {
-          name: groupName,
+          name: window.web3.toUtf8(groupName),
           numParticipants: participantsAmount
         }, (data) => {
           console.log('data callback for postGroupToAPI', data);
