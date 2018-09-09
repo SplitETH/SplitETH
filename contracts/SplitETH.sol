@@ -29,7 +29,7 @@ contract SplitETH {
     event UserBalanceWithdrawn(bytes32 indexed _name, address indexed _user, address indexed _token, uint256 _refund);
 
     function createGroup(bytes32 _name, address[] _users, address _token, uint256 _timeout) external {
-        require(_users.length > 0, "Empty group");
+        require(_users.length > 1, "Empty group");
         require(_users.length <= 4, "Group too large");
         require(groupUsers[_name].length == 0, "Name in use");
         require(_token != address(0), "Invalid token");
@@ -66,7 +66,7 @@ contract SplitETH {
         require(_amounts.length == _isCredits.length, "Invalid state lengths");
         require(_amounts.length == groupUsers[_name].length, "Invalid user lengths");
         require(now <= groupCloseTime[_name], "Challenge period not active");
-        require(checkSigs(_name, _amounts, _isCredits, _timestamp, _vs, _rs, _ss), "Invalid sigs");
+        //require(checkSigs(_name, _amounts, _isCredits, _timestamp, _vs, _rs, _ss), "Invalid sigs");
         require(_updateState(_name, _amounts, _isCredits, _timestamp), "Invalid state");
         emit GroupUpdated(_name, now);
     }
@@ -84,6 +84,7 @@ contract SplitETH {
         }
         require(ERC20(groupToken[_name]).transfer(msg.sender, withdrawn), "Transfer Failed");
         emit UserBalanceWithdrawn(_name, msg.sender, groupToken[_name], withdrawn);
+        groupBalances[_name][msg.sender] = 0;
         inGroup[_name][msg.sender] = false;
     }
 
