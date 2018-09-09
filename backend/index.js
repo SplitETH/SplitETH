@@ -25,7 +25,9 @@ const BalanceEntrySchema = Schema({
 
 const SignatureSchema = Schema({
     signer: String,
-    signature: String
+    v: String,
+    r: String,
+    s: String
 });
 
 const BillSchema = Schema({
@@ -39,19 +41,14 @@ const BillSchema = Schema({
     payments: [BalanceEntrySchema],
     signatures: [SignatureSchema],
     group: { type: Schema.Types.ObjectId, ref: 'Group' },
-    timestamp: {
-        type: Date,
-        // `Date.now()` returns the current unix timestamp as a number
-        default: Date.now
-    }
+    timestamp: Number
 });
 
 const GroupModel = mongoose.model('Group', Schema({
-    _id: String,
     name: String,
     numParticipants: Number,
     bills: [BillSchema]
-}, { _id: false }));
+}));
 
 const BillModel = mongoose.model('Bill', BillSchema);
 
@@ -60,7 +57,6 @@ const main = async () => {
         console.log('body', req.body);
 
         const group = new GroupModel({
-            _id: req.body.address + (Math.random() * 100).toString(), // random for testing with the same id
             name: req.body.name,
             numParticipants: req.body.numParticipants
         });
@@ -71,10 +67,11 @@ const main = async () => {
         res.json(group);
     });
 
-    app.post('/group/:group_id/bill', async (req, res) => {
+    app.post('/group/:group_name/bill', async (req, res) => {
         console.log('body', req.body);
 
-        GroupModel.findById(req.params.group_id, (err, group) => {
+        GroupModel.findOne({ name: req.params.group_name }, (err, group) => {
+            console.log('/group/:group_name/bill', err, group);
             const bill = new BillModel({
                 name: req.body.name,
                 state: req.body.state,
@@ -84,7 +81,8 @@ const main = async () => {
                 parts: req.body.parts,
                 payments: req.body.payments,
                 fullySigned: req.body.fullySigned || false,
-                totalAmount: req.body.totalAmount
+                totalAmount: req.body.totalAmount,
+                timestamp: new Date().getTime()
             });
 
             group.bills.push(bill);
@@ -96,13 +94,13 @@ const main = async () => {
     });
 
     app.get('/group/:group_id/bills', async (req, res) => {
-        GroupModel.findById(req.params.group_id, (err, group) => {
+        GroupModel.findOne({ name: req.params.group_id }, (err, group) => {
             res.json(group.bills);
         });
     });
 
     app.get('/group/:group_id/bills_not_signed/:address_id', async (req, res) => {
-        GroupModel.findById(req.params.group_id, (err, group) => {
+        GroupModel.findOne({ name: req.params.group_id }, (err, group) => {
             const notSigned = group.bills.filter(({ signatures }) => {
                 return signatures.filter(({ signer }) => signer.toLowerCase() === req.params.address_id.toLowerCase()).length > 0
             });
@@ -118,7 +116,7 @@ const main = async () => {
             });
         }
 
-        GroupModel.findById(req.params.group_id, async (err, group) => {
+        GroupModel.findOne({ name: req.params.group_id }, async (err, group) => {
             const bill = group.bills.id(req.params.bill_id);
 
             if (bill.signatures.find(({ signer }) => signer.toLowerCase() === req.body.signature.signer.toLowerCase())) {
